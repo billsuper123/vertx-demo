@@ -74,6 +74,4 @@ gen### Scala template
 
 .idea/
 .vertx/
-pom.xml
-src/
 target/generated-sources/
