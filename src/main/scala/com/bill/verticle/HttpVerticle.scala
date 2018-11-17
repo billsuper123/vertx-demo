@@ -4,13 +4,21 @@ import com.bill.handler.{IndexHandler, PersonHandler}
 import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.config.ConfigRetriever
 import io.vertx.scala.ext.web.Router
+import io.vertx.scala.ext.web.handler.BodyHandler
 
 import scala.util.{Failure, Success}
+
+object HttpVerticle{
+  val BODY_SIZE = 1024*1024*1024
+  val HTTP_PORT = 9090
+}
 
 class HttpVerticle extends ScalaVerticle{
 
   override def start(): Unit = {
     val router = Router.router(vertx)
+    router.route().handler(BodyHandler.create().setBodyLimit(HttpVerticle.BODY_SIZE))
+
     val indexHandler = IndexHandler()
     val personHandler = PersonHandler()
     router.get("/").handler(indexHandler.index(_))
@@ -28,7 +36,7 @@ class HttpVerticle extends ScalaVerticle{
         }
     }
 
-    vertx.createHttpServer().requestHandler(router.accept(_)).listenFuture(9090).onComplete{
+    vertx.createHttpServer().requestHandler(router.accept(_)).listenFuture(HttpVerticle.HTTP_PORT).onComplete{
       case Success(result) => {
         println("Server is now listening!")
       }
