@@ -4,7 +4,8 @@ import com.bill.handler.{IndexHandler, PersonHandler}
 import io.vertx.lang.scala.ScalaVerticle
 import io.vertx.scala.config.ConfigRetriever
 import io.vertx.scala.ext.web.Router
-import io.vertx.scala.ext.web.handler.BodyHandler
+import io.vertx.scala.ext.web.handler.{BodyHandler, CookieHandler, SessionHandler}
+import io.vertx.scala.ext.web.sstore.LocalSessionStore
 
 import scala.util.{Failure, Success}
 
@@ -18,6 +19,8 @@ class HttpVerticle extends ScalaVerticle{
   override def start(): Unit = {
     val router = Router.router(vertx)
     router.route().handler(BodyHandler.create().setBodyLimit(HttpVerticle.BODY_SIZE))
+    router.route().handler(CookieHandler.create)
+    router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)).setCookieHttpOnlyFlag(true).setCookieSecureFlag(true))
 
     val indexHandler = IndexHandler()
     val personHandler = PersonHandler()
